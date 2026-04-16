@@ -11,7 +11,10 @@ const dbConfig = {
   queueLimit: 0,
   charset: 'utf8mb4',
   timezone: '+08:00',
-  dateStrings: true
+  dateStrings: true,
+  typeCast: true,
+  supportBigNumbers: true,
+  bigNumberStrings: true
 };
 
 const pool = mysql.createPool(dbConfig);
