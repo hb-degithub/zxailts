@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: chatroom_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-Hly-20061229}
+      MYSQL_DATABASE: ${DB_NAME:-zydylts}
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./1.sql:/docker-entrypoint-initdb.d/1.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: ./back-end
+    container_name: chatroom_backend
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_USER: root
+      DB_PASSWORD: ${DB_PASSWORD:-Hly-20061229}
+      DB_NAME: ${DB_NAME:-zydylts}
+      PORT: 3000
+    ports:
+      - "3000:3000"
+
+  frontend:
+    build: ./front-end
+    container_name: chatroom_frontend
+    restart: always
+    ports:
+      - "8080:80"
+
+  admin:
+    build: ./admin-front
+    container_name: chatroom_admin
+    restart: always
+    ports:
+      - "8081:80"
+
+volumes:
+  db_data:

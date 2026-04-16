@@ -1,0 +1,43 @@
+# 依赖
+node_modules/
+admin-front/node_modules/
+front-end/node_modules/
+back-end/node_modules/
+
+# 构建产物
+dist/
+admin-front/dist/
+front-end/dist/
+
+# 环境变量
+.env
+.env.local
+.env.*.local
+
+# 日志
+*.log
+npm-debug.log*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 临时文件
+*.tmp
+*.temp
+
+# Docker 相关（服务器上构建，不需要上传）
+docker-compose.local.yml
+
+# 部署脚本（服务器上手动传）
+deploy.sh
+deploy.bat
+
+# 其他
+*.local
