@@ -1,5 +1,7 @@
 # 专业引导聊天室
 
+> 学校个人项目
+
 一个基于 Vue3 + Express + MySQL 的实时聊天室系统，支持 AI 机器人对话。
 
 ## 功能特性
@@ -35,7 +37,7 @@ cd zxailts
 docker-compose up -d
 ```
 
-访问 http://服务器IP:8080
+访问 http://服务器IP:10086
 
 ### 手动部署
 
@@ -56,7 +58,7 @@ npm run build
 ## 在线更新
 
 ```bash
-curl -X POST http://服务器IP:3000/api/deploy \
+curl -X POST http://服务器IP:10020/api/deploy \
   -H "Content-Type: application/json" \
   -d '{"secret":"你的密钥","action":"build"}'
 ```
@@ -65,9 +67,9 @@ curl -X POST http://服务器IP:3000/api/deploy \
 
 | 服务 | 端口 |
 |------|------|
-| 前端 | 8080 |
-| 管理后台 | 8081 |
-| 后端 API | 3000 |
+| 前端 | 10086 |
+| 管理后台 | 10010 |
+| 后端 API | 10020 |
 | MySQL | 3306 |
 
 ## 许可证
