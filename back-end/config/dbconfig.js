@@ -26,7 +26,3 @@ pool.getConnection().then(conn => {
 });
 
 module.exports = pool;
-
-const pool = mysql.createPool(dbConfig);
-
-module.exports = pool;
