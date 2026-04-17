@@ -14,4 +14,11 @@ const pool = mysql.createPool({
   charset: 'utf8mb4'
 });
 
+// 每次获取连接后执行 SET NAMES utf8mb4
+pool.on('connection', (connection) => {
+  connection.query("SET NAMES utf8mb4", (err) => {
+    if (err) console.error('SET NAMES error:', err);
+  });
+});
+
 module.exports = pool;
