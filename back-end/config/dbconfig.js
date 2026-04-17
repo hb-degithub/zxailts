@@ -14,25 +14,4 @@ const pool = mysql.createPool({
   charset: 'utf8mb4'
 });
 
-// 封装 query 方法，每次查询前先 SET NAMES
-const originalQuery = pool.query.bind(pool);
-
-pool.query = async function(sql, values) {
-  const conn = await pool.getConnection();
-  try {
-    await conn.query("SET NAMES utf8mb4");
-    return await originalQuery(sql, values);
-  } finally {
-    conn.release();
-  }
-};
-
-// 封装 getConnection 方法
-const originalGetConnection = pool.getConnection.bind(pool);
-pool.getConnection = async function() {
-  const conn = await originalGetConnection();
-  await conn.query("SET NAMES utf8mb4");
-  return conn;
-};
-
 module.exports = pool;
