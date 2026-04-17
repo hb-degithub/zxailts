@@ -14,20 +14,14 @@ const pool = mysql.createPool({
   typeCast: true,
   supportBigNumbers: true,
   bigNumberStrings: true,
-  charset: 'utf8mb4',
-  collation: 'utf8mb4_unicode_ci'
+  charset: 'utf8mb4'
 });
 
-// 初始化连接池后设置字符集
-(async () => {
-  try {
-    const connection = await pool.getConnection();
-    await connection.query("SET NAMES utf8mb4");
-    connection.release();
-    console.log('Database charset initialized to utf8mb4');
-  } catch (err) {
-    console.error('Failed to set charset:', err);
-  }
-})();
+// 在连接池获取连接后立即设置会话字符集
+pool.on('connection', (connection) => {
+  connection.query('SET NAMES utf8mb4', (err) => {
+    if (err) console.error('SET NAMES error:', err);
+  });
+});
 
 module.exports = pool;
