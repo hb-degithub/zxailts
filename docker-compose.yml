@@ -8,7 +8,7 @@ services:
       MYSQL_DATABASE: ${DB_NAME:-zydylts}
     ports:
       - "13306:3306"
-    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --init-connect="SET NAMES utf8mb4" --skip-character-set-client-handshake
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --skip-character-set-client-handshake
     volumes:
       - db_data:/var/lib/mysql
       - ./1.sql:/docker-entrypoint-initdb.d/1.sql:ro
