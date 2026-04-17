@@ -39,6 +39,7 @@ CREATE TABLE IF NOT EXISTS `messages` (
   `id` BIGINT NOT NULL AUTO_INCREMENT,
   `room_id` INT NOT NULL COMMENT '所属房间ID',
   `user_id` INT DEFAULT NULL COMMENT '发送者ID',
+  `bot_id` BIGINT DEFAULT NULL COMMENT '机器人ID（AI消息时使用）',
   `content` TEXT NOT NULL COMMENT '消息内容',
   `message_type` ENUM('text', 'image', 'system', 'ai_response') DEFAULT 'text' COMMENT '消息类型',
   `parent_id` BIGINT DEFAULT NULL COMMENT '回复的消息ID',
