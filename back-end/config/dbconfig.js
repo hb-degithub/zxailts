@@ -18,11 +18,16 @@ const pool = mysql.createPool({
   collation: 'utf8mb4_unicode_ci'
 });
 
-// 确保每次获取连接时设置字符集
-pool.on('connection', (connection) => {
-  connection.query("SET NAMES utf8mb4", (err) => {
-    if (err) console.error('Set names error:', err);
-  });
-});
+// 初始化连接池后设置字符集
+(async () => {
+  try {
+    const connection = await pool.getConnection();
+    await connection.query("SET NAMES utf8mb4");
+    connection.release();
+    console.log('Database charset initialized to utf8mb4');
+  } catch (err) {
+    console.error('Failed to set charset:', err);
+  }
+})();
 
 module.exports = pool;
