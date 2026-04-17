@@ -223,9 +223,11 @@ router.post('/invite_codes/generate', async (req, res) => {
   try {
     const { count = 10, prefix = 'INV', max_uses = 1, expires_days = 365 } = req.body;
     const codes = [];
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 
     for (let i = 0; i < count; i++) {
-      const code = `${prefix}-${Date.now()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+      const randomPart = Array.from({ length: 6 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+      const code = `${prefix}-${randomPart}`;
       const expires_at = new Date(Date.now() + expires_days * 24 * 60 * 60 * 1000);
       const [result] = await pool.query(
         'INSERT INTO invite_codes (code, type, max_uses, expires_at, used_count, is_active) VALUES (?, ?, ?, ?, 0, 1)',
