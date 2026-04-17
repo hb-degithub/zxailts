@@ -218,6 +218,54 @@ router.get('/dashboard/messages', async (req, res) => {
   }
 });
 
+// 获取邀请码列表
+router.get('/invite_codes', async (req, res) => {
+  try {
+    const { page = 1, pageSize = 10 } = req.query;
+    const offset = (page - 1) * pageSize;
+
+    const [codes] = await pool.query(
+      `SELECT ic.*, u.username as creator_name
+       FROM invite_codes ic
+       LEFT JOIN users u ON ic.creator_id = u.id
+       ORDER BY ic.created_at DESC
+       LIMIT ? OFFSET ?`,
+      [parseInt(pageSize), offset]
+    );
+
+    const [[{ total }]] = await pool.query('SELECT COUNT(*) as total FROM invite_codes');
+
+    res.json(ApiResponse.success({
+      list: codes,
+      pagination: {
+        page: parseInt(page),
+        pageSize: parseInt(pageSize),
+        total
+      }
+    }));
+  } catch (error) {
+    console.error('list invite codes error:', error);
+    res.status(500).json(ApiResponse.error(error.message));
+  }
+});
+
+// 删除邀请码
+router.delete('/invite_codes/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const [result] = await pool.query('DELETE FROM invite_codes WHERE id = ?', [id]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json(ApiResponse.error('邀请码不存在'));
+    }
+
+    res.json(ApiResponse.success(null, '删除成功'));
+  } catch (error) {
+    console.error('delete invite code error:', error);
+    res.status(500).json(ApiResponse.error(error.message));
+  }
+});
+
 // 生成邀请码
 router.post('/invite_codes/generate', async (req, res) => {
   try {
