@@ -11,17 +11,10 @@ const pool = mysql.createPool({
   queueLimit: 0,
   timezone: '+08:00',
   dateStrings: true,
-  typeCast: true,
+  typeCast: false,
   supportBigNumbers: true,
   bigNumberStrings: true,
   charset: 'utf8mb4'
-});
-
-// 在连接池获取连接后立即设置会话字符集
-pool.on('connection', (connection) => {
-  connection.query('SET NAMES utf8mb4', (err) => {
-    if (err) console.error('SET NAMES error:', err);
-  });
 });
 
 module.exports = pool;
