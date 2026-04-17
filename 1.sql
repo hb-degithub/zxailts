@@ -204,10 +204,3 @@ INSERT IGNORE INTO `users` (`username`, `password_hash`, `role`) VALUES
 INSERT IGNORE INTO `invite_codes` (`code`, `type`, `max_uses`, `expires_at`) VALUES
 ('ADMIN2024', 'register', 100, DATE_ADD(NOW(), INTERVAL 1 YEAR)),
 ('WELCOME', 'register', 1000, DATE_ADD(NOW(), INTERVAL 1 YEAR));
-
--- 创建默认公开聊天室
-INSERT IGNORE INTO `rooms` (`name`, `description`, `type`) VALUES
-('公共聊天室', '欢迎所有人加入', 'public'),
-('AI 讨论区', '讨论人工智能相关话题', 'public'),
-('官方客服群', '官方客服，为您解答问题', 'ai_chat'),
-('综合讨论', '大型公开聊天社区，欢迎所有用户加入讨论', 'public');
