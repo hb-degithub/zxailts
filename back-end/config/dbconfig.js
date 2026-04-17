@@ -11,10 +11,7 @@ const pool = mysql.createPool({
   queueLimit: 0,
   timezone: '+08:00',
   dateStrings: true,
-  supportBigNumbers: true,
-  bigNumberStrings: true,
-  charset: 'utf8mb4',
-  collation: 'utf8mb4_unicode_ci'
+  charset: 'utf8mb4'
 });
 
 module.exports = pool;
