@@ -14,7 +14,15 @@ const pool = mysql.createPool({
   typeCast: true,
   supportBigNumbers: true,
   bigNumberStrings: true,
-  charset: 'utf8mb4'
+  charset: 'utf8mb4',
+  collation: 'utf8mb4_unicode_ci'
+});
+
+// 确保每次获取连接时设置字符集
+pool.on('connection', (connection) => {
+  connection.query("SET NAMES utf8mb4", (err) => {
+    if (err) console.error('Set names error:', err);
+  });
 });
 
 module.exports = pool;
