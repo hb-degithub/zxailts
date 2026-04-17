@@ -227,7 +227,7 @@ router.post('/invite_codes/generate', async (req, res) => {
     for (let i = 0; i < count; i++) {
       const code = `${prefix}-${Date.now()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
       const [result] = await pool.query(
-        'INSERT INTO invite_codes (code, is_used, created_at) VALUES (?, 0, NOW())',
+        'INSERT INTO invite_codes (code, used_count, created_at) VALUES (?, 0, NOW())',
         [code]
       );
       codes.push({ id: result.insertId, code });
