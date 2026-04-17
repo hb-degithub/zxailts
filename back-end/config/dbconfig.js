@@ -13,7 +13,8 @@ const pool = mysql.createPool({
   dateStrings: true,
   typeCast: true,
   supportBigNumbers: true,
-  bigNumberStrings: true
+  bigNumberStrings: true,
+  charset: 'utf8mb4'
 });
 
 // 初始化连接时设置字符集
