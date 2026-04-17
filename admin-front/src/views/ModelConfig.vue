@@ -13,6 +13,11 @@
         <el-table-column prop="provider" label="提供商" width="100" />
         <el-table-column prop="api_base_url" label="API地址" show-overflow-tooltip />
         <el-table-column prop="model_name" label="模型" width="120" />
+        <el-table-column prop="is_public" label="公开" width="80">
+          <template #default="{ row }">
+            <el-tag :type="row.is_public ? 'success' : 'info'">{{ row.is_public ? '是' : '否' }}</el-tag>
+          </template>
+        </el-table-column>
         <el-table-column label="操作" width="180">
           <template #default="{ row }">
             <el-button size="small" @click="handleEdit(row)">编辑</el-button>
@@ -49,6 +54,9 @@
         <el-form-item label="温度参数">
           <el-input-number v-model="form.temperature" :min="0" :max="2" :step="0.1" :precision="2" />
         </el-form-item>
+        <el-form-item label="公开给用户">
+          <el-switch v-model="form.is_public" />
+        </el-form-item>
       </el-form>
       <template #footer>
         <el-button @click="dialogVisible = false">取消</el-button>
@@ -76,7 +84,8 @@ const form = reactive({
   model_name: '',
   system_prompt: '',
   max_tokens: 2048,
-  temperature: 0.7
+  temperature: 0.7,
+  is_public: false
 })
 
 onMounted(() => loadConfigs())
@@ -95,7 +104,7 @@ const loadConfigs = async () => {
 
 const handleAdd = () => {
   isEdit.value = false
-  Object.assign(form, { id: null, room_id: 1, provider: '', api_base_url: '', api_key: '', model_name: '', system_prompt: '', max_tokens: 2048, temperature: 0.7 })
+  Object.assign(form, { id: null, room_id: 1, provider: '', api_base_url: '', api_key: '', model_name: '', system_prompt: '', max_tokens: 2048, temperature: 0.7, is_public: false })
   dialogVisible.value = true
 }
 

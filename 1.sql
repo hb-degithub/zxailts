@@ -73,16 +73,19 @@ CREATE TABLE IF NOT EXISTS `ai_configs` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `room_id` INT NOT NULL COMMENT '关联的房间ID',
   `provider` VARCHAR(50) NOT NULL COMMENT 'AI提供商',
+  `api_base_url` VARCHAR(255) NOT NULL COMMENT 'API地址',
+  `api_key` VARCHAR(255) NOT NULL COMMENT 'API密钥',
   `model_name` VARCHAR(50) NOT NULL COMMENT '模型名称',
   `system_prompt` TEXT COMMENT '系统预设提示词',
   `max_tokens` INT DEFAULT 2048 COMMENT '最大输出Token数',
   `temperature` DECIMAL(3,2) DEFAULT 0.7 COMMENT '温度参数',
   `config_type` ENUM('system', 'user_custom') DEFAULT 'system' COMMENT '配置类型',
+  `is_public` TINYINT(1) DEFAULT 0 COMMENT '是否公开给用户使用',
   `user_id` INT DEFAULT NULL COMMENT '关联用户ID',
   `custom_config_id` INT DEFAULT NULL COMMENT '关联自定义配置ID',
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `uk_room_id` (`room_id`),
+  KEY `idx_room_id` (`room_id`),
   KEY `idx_user_id` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='AI模型配置表';
 

@@ -531,6 +531,7 @@ import { getRooms, createRoom, deleteRoom, getRoomMembers, addRoomMember, remove
 import { getMessages, createMessage } from '@/api/messages'
 import { getUsers, joinCommunity as apiJoinCommunity, getCommunityStats } from '@/api/users'
 import { getAiConfigs } from '@/api/aiConfigs'
+import { aiChat } from '@/api/ai'
 import { logError, logInfo, downloadLogs } from '@/utils/debug'
 import ChatBubble from '@/components/ChatBubble.vue'
 import WelcomeDialog from '@/components/WelcomeDialog.vue'
@@ -1141,43 +1142,6 @@ const sendMessage = async () => {
     }
   }
 
-  // 内容审查
-  if (selectedAiConfigId.value && content) {
-    const config = aiConfigs.value.find(c => c.id === selectedAiConfigId.value)
-    if (config) {
-      try {
-        const baseUrl = config.api_base_url.replace(/\/chat\/completions.*$/, '')
-        const reviewResponse = await fetch(`${baseUrl}/chat/completions`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${config.api_key}`
-          },
-          body: JSON.stringify({
-            model: config.model_name,
-            messages: [
-              { role: 'system', content: '你是一个内容安全审查助手。判断用户消息是否包含以下违规内容：1. 色情低俗 2. 政治敏感 3. 暴力恐怖 4. 垃圾广告 5. 人身攻击。如果违规回复"违规"，否则回复"正常"，只回复这两个词之一。' },
-              { role: 'user', content: content }
-            ],
-            max_tokens: 10,
-            temperature: 0
-          })
-        })
-
-        const reviewData = await reviewResponse.json()
-        const reviewResult = reviewData.choices?.[0]?.message?.content || ''
-
-        if (reviewResult.includes('违规')) {
-          ElMessage.warning('消息包含违规内容，已被拦截')
-          inputMessage.value = ''
-          return
-        }
-      } catch (error) {
-        console.error('Content review failed:', error)
-      }
-    }
-  }
-
   try {
     // 检查是否选择了房间
     if (!currentRoom.value || !currentRoom.value.id) {
@@ -1219,29 +1183,22 @@ const sendMessage = async () => {
           // 构建消息列表（只取最近10条相关上下文）
           const recentContext = botContext.slice(-10)
 
-          const baseUrl = config.api_base_url.replace(/\/chat\/completions.*$/, '')
-          const response = await fetch(`${baseUrl}/chat/completions`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${config.api_key}`
-            },
-            body: JSON.stringify({
-              model: config.model_name,
-              messages: [
-                { role: 'system', content: targetBot.personality },
-                ...recentContext,
-                { role: 'user', content: content }
-              ],
-              max_tokens: config.max_tokens || 2048,
-              temperature: parseFloat(config.temperature) || 0.7
-            })
+          // 通过后端代理调用 AI，不暴露 API 密钥
+          const response = await aiChat({
+            config_id: targetBot.configId,
+            messages: [
+              { role: 'system', content: targetBot.personality },
+              ...recentContext,
+              { role: 'user', content: content }
+            ],
+            max_tokens: config.max_tokens || 2048,
+            temperature: parseFloat(config.temperature) || 0.7
           })
 
-          const data = await response.json()
+          const data = response.data
           console.log('AI API response:', data)
 
-          if (response.ok && data.choices?.[0]?.message?.content) {
+          if (data.choices?.[0]?.message?.content) {
             const aiReply = {
               room_id: currentRoom.value.id,
               user_id: userStore.userInfo.id,

@@ -5,6 +5,7 @@ const authController = require('../controllers/authController');
 const inviteCodeController = require('../controllers/inviteCodeController');
 const adminRoutes = require('./admin');
 const openaiRoutes = require('./openai');
+const aiRoutes = require('./ai');
 const pool = require('../config/dbconfig');
 const ApiResponse = require('../utils/response');
 
@@ -25,6 +26,9 @@ const tables = [
 
 // OpenAI 兼容接口
 router.use('/', openaiRoutes);
+
+// AI 代理接口 - 用户端通过此接口调用 AI，不暴露密钥
+router.use('/api', aiRoutes);
 
 // 房间成员接口 - 必须在 /api/:table 和 adminRoutes 之前定义
 router.get('/api/rooms/:roomId/members', async (req, res) => {
