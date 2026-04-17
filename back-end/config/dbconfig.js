@@ -17,13 +17,4 @@ const pool = mysql.createPool({
   charset: 'utf8mb4'
 });
 
-// 初始化连接时设置字符集
-pool.getConnection().then(conn => {
-  conn.query("SET NAMES utf8mb4").then(() => {
-    conn.release();
-  }).catch(() => {
-    conn.release();
-  });
-});
-
 module.exports = pool;
