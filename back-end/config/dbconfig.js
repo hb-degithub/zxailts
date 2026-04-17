@@ -1,4 +1,4 @@
-const mysql = require('mysql2');
+const mysql = require('mysql2/promise');
 
 const pool = mysql.createPool({
   host: process.env.DB_HOST || 'localhost',
@@ -13,26 +13,5 @@ const pool = mysql.createPool({
   dateStrings: true,
   charset: 'utf8mb4'
 });
-
-// 将 mysql2 的 promise API 包装在查询方法中
-const originalQuery = pool.query.bind(pool);
-
-pool.query = function(sql, values) {
-  return new Promise((resolve, reject) => {
-    originalQuery(sql, values, (err, rows, fields) => {
-      if (err) reject(err);
-      else resolve([rows, fields]);
-    });
-  });
-};
-
-pool.getConnection = function() {
-  return new Promise((resolve, reject) => {
-    originalQuery.getConnection((err, conn) => {
-      if (err) reject(err);
-      else resolve(conn);
-    });
-  });
-};
 
 module.exports = pool;
