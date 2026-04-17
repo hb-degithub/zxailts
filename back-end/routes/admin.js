@@ -221,20 +221,22 @@ router.get('/dashboard/messages', async (req, res) => {
 // 生成邀请码
 router.post('/invite_codes/generate', async (req, res) => {
   try {
-    const { count = 10, prefix = 'INV' } = req.body;
+    const { count = 10, prefix = 'INV', max_uses = 1, expires_days = 365 } = req.body;
     const codes = [];
 
     for (let i = 0; i < count; i++) {
       const code = `${prefix}-${Date.now()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+      const expires_at = new Date(Date.now() + expires_days * 24 * 60 * 60 * 1000);
       const [result] = await pool.query(
-        'INSERT INTO invite_codes (code, used_count, created_at) VALUES (?, 0, NOW())',
-        [code]
+        'INSERT INTO invite_codes (code, type, max_uses, expires_at, used_count, is_active) VALUES (?, ?, ?, ?, 0, 1)',
+        [code, 'register', max_uses, expires_at]
       );
-      codes.push({ id: result.insertId, code });
+      codes.push({ id: result.insertId, code, max_uses, expires_at });
     }
 
     res.json(ApiResponse.success(codes, '生成成功'));
   } catch (error) {
+    console.error('generate invite codes error:', error);
     res.status(500).json(ApiResponse.error(error.message));
   }
 });
@@ -245,10 +247,15 @@ router.put('/invite_codes/:id/toggle', async (req, res) => {
     const { id } = req.params;
     const { isActive } = req.body;
 
-    await pool.query('UPDATE invite_codes SET is_active = ? WHERE id = ?', [isActive ? 1 : 0, id]);
+    const [result] = await pool.query('UPDATE invite_codes SET is_active = ? WHERE id = ?', [isActive ? 1 : 0, id]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json(ApiResponse.error('邀请码不存在'));
+    }
 
     res.json(ApiResponse.success(null, '更新成功'));
   } catch (error) {
+    console.error('toggle invite code error:', error);
     res.status(500).json(ApiResponse.error(error.message));
   }
 });
